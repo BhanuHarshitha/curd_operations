@@ -1,0 +1,189 @@
+body {
+    background-color: rgb(203, 201, 197);
+}
+
+.cont {
+    display: flex;
+    flex-direction: row;
+}
+
+.left-panel {
+    flex-basis: 40%;
+    margin: 20px 5px 20px 20px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.right-panel {
+    flex-basis: 60%;
+    margin: 20px 20px 0px 5px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.name,
+.gen-job,
+.available,
+.education {
+    display: flex;
+    flex-direction: row;
+}
+
+.flnm,
+.em,
+.gend,
+.avai,
+.ed {
+    flex: 1;
+}
+
+.name input {
+    width: 90%;
+    height: 40px;
+    margin: 10px 10px 20px 10px;
+    border: 0px;
+    background-color: rgb(234, 236, 241);
+    box-shadow: 0.2px 0.8px rgb(114, 108, 108);
+}
+
+.mail-tel input {
+    width: 95%;
+    height: 40px;
+    margin: 10px 10px 20px 10px;
+    border: 0px;
+    background-color: rgb(234, 236, 241);
+    box-shadow: 0.2px 0.8px rgb(114, 108, 108);
+}
+
+.gend,
+.avai,
+.education {
+    margin: 10px 10px 20px 10px;
+}
+
+.gend #start,
+.avai select {
+    width: 99%;
+    height: 35px;
+    margin-top: 5px;
+    border: 0px;
+    background-color: rgb(234, 236, 241);
+    box-shadow: 0.2px 0.8px rgb(114, 108, 108);
+}
+p{
+    margin-bottom: -10px;
+    margin-top: -1px;
+}
+
+
+button {
+    margin-top: 10px;
+    padding: 5px 10px 5px 10px;
+    background-color: white;
+    border: 0.5px solid rgb(233, 231, 231);
+    border-radius: 5px;
+    box-shadow: 1px 0.8px rgb(114, 108, 108);
+    cursor: pointer;
+}
+#sub:hover{
+    background-color: aquamarine;
+    box-shadow: 1px 0.8px aqua;
+}
+#cancel {
+    float: right;
+}
+
+#female {
+    margin-left: 30px;
+}
+#search{
+    width: 94%;
+    height: 40px;
+    padding: 10px;
+    border: 0px;
+}
+.sear{
+    margin-top: 20px;
+    border: 1px solid black;
+   
+}
+.sear button:hover{
+    background-color: rgb(0, 255, 221);
+}
+
+
+
+
+.form-table {
+    margin-top: 30px;
+    border-collapse: collapse;
+    text-align: center;
+    width: 100%;
+}
+.form-table th,td{
+    border-bottom: 0.5px solid rgb(207, 200, 200);
+    padding: 8px;
+}
+.dialog-table{
+    width: 50%;
+    text-align: center;
+    padding: 10px;
+    margin-left: 25%;
+    margin-right: 30%;
+}
+.dialog-table th,td{
+    padding: 12px;
+}
+dialog{
+    margin-top: -20%;
+    width: 50%;
+    border-radius: 10px;
+    position: fixed;
+  
+}
+.close-opt{
+    background-color: rgb(18, 127, 222);
+    width: 101.8%;
+    height: 35px;
+    margin: -16px -70px -16px -16px;
+    padding: 10px;
+    border-radius: 8px 8px 0px 0px;
+    
+}
+#close-btn{
+    float: right;
+    color: black;
+    border: none;
+    background-color: rgb(18, 127, 222);
+    box-shadow: 0px 0px;
+    margin-top: -10px;
+    margin-right: -10px;
+    padding: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 0px 8px 0px 0px;
+    
+}
+#close-btn:hover{
+    background-color: red;
+    color: white;
+    border-radius: 0px;
+    border-radius: 0px 8px 0px 0px;
+}
+#fname-alert,
+#lname-alert,
+#mail-alert,
+#phn-alert,
+#date-alert,
+#gender-alert,
+#pos-alert,
+#educ-alert{
+    color: red;
+    margin-left: 15px;
+    margin-bottom: 10px;
+}
+#cancel:hover{
+    background-color: red;
+}

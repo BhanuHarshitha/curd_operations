@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sample Operations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./crud2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<body class="cont">
+    <div class="left-panel">
+        <h1 style="text-align: center;">Fill the form...</h1>
+        <form id="my-form" action="http://localhost:5500/submit" method="post">
+            <div class="name">
+                <div class="flnm">
+                    <input type="text" id="fname" name="fname" placeholder="First Name *" required>
+                    <p id="fname-alert"></p>
+                </div>
+                <div class="flnm">
+                    <input type="text" id="lname" name="lname" placeholder="Last Name *" required>
+                    <p id="lname-alert"></p>
+                </div>
+            </div>
+            <div class="mail-tel">
+                <div class="em">
+                    <input type="email" id="mail" name="mail" placeholder="Email Id *" required>
+                    <p id="mail-alert"></p>
+                </div>
+                <div class="em">
+                    <input type="tel" id="mob" name="mob" placeholder="Mobile Number *" required>
+                    <p id="phn-alert"></p>
+                </div>
+            </div>
+            <div class="gen-job">
+                <div class="gend">
+                    <label for="start"><b>Available start date *</b></label><br>
+                    <input type="date" id="start" name="start" placeholder="dd/mm/yyyy" required>
+                    <p id="date-alert"></p>
+
+                </div>
+                <div class="gend">
+                    <p><b>Gender *</b></p><br>
+                    <input type="radio" id="male" name="fm" value="Male">
+                    <label for="male">Male</label>
+                    <input type="radio" id="female" name="fm" value="Female">
+                    <label for="female">Female</label>
+                    <p id="gender-alert"></p>
+
+                </div>
+            </div>
+            <div class="available">
+                <div class="avai">
+                    <p><b>Which position you are applying for? *</b></p><br>
+                    <select name="job" id="job" required>
+                        <option value="select-a-job" disabled selected>Select a Job</option>
+                        <option value="Job 1">Job 1</option>
+                        <option value="Job 2">Job 2</option>
+                        <option value="Job 3">Job 3</option>
+                        <option value="Job 4">Job 4</option>
+                    </select>
+                    <p id="pos-alert"></p>
+                </div>
+            </div>
+            <div class="education">
+                <div class="ed">
+                    <p><b>Education *</b></p> <br>
+                    <input type="checkbox" value="SSC" id="ssc" name="educate">
+                    <label for="ssc">SSC (10<sup>th</sup> Standard)</label><br>
+                    <input type="checkbox" value="Intermediate" id="inter" name="educate">
+                    <label for="inter">Intermediate (12<sup>th</sup> Standard)</label><br>
+                    <input type="checkbox" value="Bachelor's Degree" id="ug" name="educate">
+                    <label for="ug">Bachelor's Degree</label><br>
+                    <input type="checkbox" value="Master's Degree" id="pg" name="educate">
+                    <label for="pg">Master's Degree</label><br>
+                    <p id="educ-alert"></p>
+                </div>
+            </div>
+            <button type="submit" id="sub">Submit</button>
+            <button type="button" id="upd" style="display: none;">Save Changes</button>
+            <button type="reset" id="cancel">Clear</button>
+        </form>
+    </div>
+    <div class="right-panel">
+        <div class="sear">
+            <input type="search" id="search" name="search" placeholder="Search" onkeyup="searchFunc()">
+            <button type="button"><i class="fa fa-search"></i></button>
+        </div>
+        <div>
+            <table class="form-table">
+                <thead>
+                    <tr class="header">
+                        <th>First Name</th>
+                        <th>Email Id</th>
+                        <th>Applied for</th>
+                        <th> </th>
+                    </tr>
+                </thead>
+                <tbody id="tablebody">
+
+                </tbody>
+            </table>
+        </div>
+
+        <dialog id="details">
+            <div class="close-opt">
+
+                <button type="button" id="close-btn" onclick="dialogClose()">X</button>
+            </div>
+
+            <table class="dialog-table">
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody id="dialogRows">
+
+                </tbody>
+            </table>
+        </dialog>
+
+    </div>
+    <script>
+
+        document.getElementById("fname").addEventListener("input", clearAlert);
+        document.getElementById("lname").addEventListener("input", clearAlert);
+        document.getElementById("mail").addEventListener("input", clearAlert);
+        document.getElementById("mob").addEventListener("input", clearAlert);
+        document.getElementById("start").addEventListener("input", clearAlert);
+        document.getElementsByName("fm").forEach(radio => {
+            radio.addEventListener('change', clearRadioAlert);
+        });
+        document.getElementById("job").addEventListener("change", clearDropDown);
+        document.getElementsByName('educate').forEach(check => {
+            check.addEventListener('change', clearCheckBox);
+        })
+
+        function clearAlert() {
+            document.getElementById('fname-alert').innerHTML = "";
+            document.getElementById('lname-alert').innerHTML = "";
+            document.getElementById('mail-alert').innerHTML = "";
+            document.getElementById('phn-alert').innerHTML = "";
+            document.getElementById('date-alert').innerHTML = "";
+            document.getElementById('gender-alert').innerHTML = "";
+
+        }
+        function clearRadioAlert() {
+            document.getElementById('gender-alert').innerHTML = "";
+        }
+        function clearDropDown() {
+            document.getElementById('pos-alert').innerHTML = ""
+        }
+        function clearCheckBox() {
+            document.getElementById('educ-alert').innerHTML = "";
+        }
+
+        let SeekerArr = [];
+
+        document.getElementById("sub").addEventListener("click", Submit)
+
+        createRow(SeekerArr)
+
+
+        function fetchData() {
+            return new Promise((resolve, reject) => {
+                fetch("http://localhost:5500/getSeekerData")
+                    .then(response => response.json())
+                    .then(data => {
+                        resolve(data);
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+            });
+        }
+
+        function Submit(e) {
+            e.preventDefault();
+            const enteredData = retrieveData();
+            fetchData()
+                .then(data => {
+                    if (enteredData) {
+                        const emailExists = data.some(item => item.em == enteredData.Email_Id);
+                        const mobExists = data.some(item => item.ph == enteredData.Mobile_Number);
+                        if (emailExists) {
+                            alert("This Email Already Exists");
+                            return;
+                        } else if (mobExists) {
+                            alert("This Mobile Number Already Exists");
+                            return;
+                        }
+                        else {
+
+                            fetch("http://localhost:5500/submit", {
+                                method: "POST",
+                                body: JSON.stringify(enteredData),
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                            })
+                                .then(response => response.json())
+                                .then(item => {
+                                    console.log(item);
+                                })
+                                .catch(error => {
+                                    console.error("Error:", error);
+                                });
+                            createRow(enteredData);
+                            alert("Successfully Submitted");
+                            document.getElementById("my-form").reset();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                });
+        }
+
+
+
+
+        function retrieveData() {
+            const firstnm = document.getElementById("fname").value;
+            let ferror = document.getElementById('fname-alert');
+            if (firstnm == "" || firstnm == null) {
+                ferror.innerHTML = "Enter the First Name.";
+                return;
+
+            } else if (firstnm.length <= 3) {
+                ferror.innerHTML = "First Name should be more than 3 characters.";
+                return;
+            } else if (!/^[a-zA-Z]+$/.test(firstnm)) {
+                ferror.innerHTML = "First Name should contain only alphabets.";
+                return;
+            } else {
+                ferror.innerHTML = "";
+            }
+
+            const lastnm = document.getElementById("lname").value;
+            let lerror = document.getElementById('lname-alert');
+            if (lastnm == "" || lastnm == null) {
+                lerror.innerHTML = "Enter the Last Name.";
+                return;
+            } else if (lastnm.length <= 3) {
+                lerror.innerHTML = "Last Name should be more than 3 characters.";
+                return;
+            } else if (! /^[a-zA-Z]+$/.test(lastnm)) {
+                lerror.innerHTML = "Last Name should contain only alphabets."
+                return;
+            } else {
+                lerror.innerHTML = "";
+            }
+
+            const mail_id = document.getElementById("mail").value;;
+            const merror = document.getElementById('mail-alert')
+            if (!/^\S+@\S+\.\S+$/.test(mail_id)) {
+                merror.innerHTML = "Enter the valid Mail Id.";
+                return;
+            }
+
+
+            else {
+                merror.innerHTML = "";
+            }
+
+            const phn = document.getElementById("mob").value;
+            const expr = /^[6-9][0-9]{9}$/;
+            const perror = document.getElementById('phn-alert');
+            if (phn == "" || phn == null || (!expr.test(phn))) {
+                perror.innerHTML = "Enter the valid Mobile Number.";
+                return;
+            } else {
+                perror.innerHTML = "";
+            }
+
+            const availability = document.getElementById("start").value;
+            const aerror = document.getElementById('date-alert');
+            if (!availability) {
+                aerror.innerHTML = "Select the availability date.";
+                return;
+            } else {
+                aerror.innerHTML = "";
+            }
+
+            const gender = document.getElementsByName("fm")
+            let i;
+            let valid;
+            for (i = 0; i < gender.length; i++) {
+                if (gender[i].checked) {
+                    valid = gender[i].value;
+                }
+            }
+            const generror = document.getElementById('gender-alert');
+            if (!valid) {
+                generror.innerHTML = "Select your gender.";
+                return;
+            } else {
+                generror.innerHTML = "";
+            }
+
+            const jobs = document.getElementById("job").value;
+            const joberror = document.getElementById('pos-alert');
+            if (jobs == "select-a-job") {
+                joberror.innerHTML = "Select the job which you want to apply.";
+                return;
+            } else {
+                joberror.innerHTML = "";
+            }
+
+            const educ = [];
+            const checkboxes = document.getElementsByName("educate");
+            const ederror = document.getElementById('educ-alert');
+            checkboxes.forEach((checkbox) => {
+                if (checkbox.checked) {
+                    educ.push(checkbox.value);
+                }
+            });
+            if (educ.length === 0) {
+                ederror.innerHTML = "Select atleast one of your qualification.";
+                return;
+            }
+            else {
+                ederror.innerHTML = "";
+            }
+
+            let submitted_object = { "First_Name": firstnm, "Last_Name": lastnm, "Email_Id": mail_id, "Mobile_Number": phn, "Start_Date": availability, "Gender": valid, "Position": jobs, "Qualification": educ };
+            return submitted_object;
+        }
+
+        function createRow(SeekerArr) {
+            let tableData = "";
+            fetchData()
+                .then(data => {
+                    updateTable(data)
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                });
+
+
+        }
+
+
+        function editRow(first) {
+            fetchData()
+                .then(data => {
+                    const objectData = data[first]
+                    const days = new Date(objectData.ad);
+                    days.setDate(days.getDate() + 1)
+                    const date = days.toISOString().split('T')[0];
+                    const educ = JSON.parse(objectData.edu)
+                    document.getElementById('fname').value = objectData.fn;
+                    document.getElementById('lname').value = objectData.ln;
+                    document.getElementById('mail').value = objectData.em;
+                    document.getElementById('mob').value = objectData.ph;
+                    document.getElementById('start').value = date;
+                    const genderRadio = document.getElementsByName('fm');
+                    for (let i = 0; i < genderRadio.length; i++) {
+                        if (genderRadio[i].value === objectData.gen) {
+                            genderRadio[i].checked = true;
+                        }
+                    }
+                    document.getElementById('job').value = objectData.pos;
+                    const qualicheck = document.getElementsByName('educate');
+                    qualicheck.forEach(item => {
+                        item.checked = educ.includes(item.value)
+                    })
+                    document.getElementById('sub').style.display = 'none';
+                    document.getElementById('upd').style.display = 'inline-block';
+                    document.getElementById('upd').setAttribute('onclick', `updateRow(${first})`)
+                })
+                .catch(error => {
+                    console.error("Error fetching data: ", error);
+                })
+        }
+
+        function updateRow(index) {
+            const updatedData = retrieveData();
+            console.log(updatedData)
+            fetchData()
+                .then(data => {
+                    const seekerId = data[index].SeekerId;
+                    fetch(`http://localhost:5500/update/${seekerId}`, {
+                        method: "PUT",
+                        body: JSON.stringify(updatedData),
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                        .then(response => response.json())
+                        .then(result => {
+                            console.log(result);
+                            createRow(updatedData);
+                            alert("Successfully Updated");
+                            document.getElementById("my-form").reset();
+                            document.getElementById('sub').style.display = 'inline-block';
+                            document.getElementById('upd').style.display = 'none';
+                        })
+                })
+
+
+                .catch(error => {
+                    console.error("Error updating data:", error);
+                    alert("Error updating data. Please try again.");
+                });
+        }
+
+
+
+
+
+        function deleteRow(first) {
+            const wantedData = retrieveData()
+            const cnfm = confirm("Are you sure you want to delete this Job Seeker?")
+            let seekerId;
+            if (cnfm) {
+                fetchData()
+                    .then(data => {
+                        const seekerId = data[first].SeekerId;
+                        fetch(`http://localhost:5500/delete/${seekerId}`, {
+                            method: "DELETE",
+                            body: JSON.stringify(wantedData),
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                            .then(response => response.json())
+                            .then(result => {
+                                console.log(result)
+                                createRow(wantedData)
+                            })
+                    })
+
+            }
+        }
+
+        const d = document.getElementById('details')
+
+        function showDialog(index) {
+            let dialogData = "";
+            fetchData()
+                .then(item => {
+                    const values = item[index];
+                    const days = new Date(values.ad);
+                    const date = days.getDate() + "-" + (days.getMonth() + 1) + '-' + days.getFullYear()
+                    dialogData += `<tr>
+                <td>First Name</td>
+                <td>${values.fn ? values.fn.replace(/^./, values.fn[0].toUpperCase()) : ''}</td>
+            </tr>
+            <tr>
+                <td>Last Name</td>
+                <td>${values.ln.replace(/^./, values.ln[0].toUpperCase())}</td>
+            </tr>
+            <tr>
+                <td>Email Id</td>
+                <td>${values.em}</td>
+            </tr>
+            <tr>
+                <td>Mobile Number</td>
+                <td>${values.ph}</td>
+            </tr>
+            <tr>
+                <td>Availability Date</td>
+                <td>${date}</td>
+            </tr>
+            <tr>
+                <td>Gender</td>
+                <td>${values.gen}</td>
+            </tr>
+            <tr>
+                <td>Application for</td>
+                <td>${values.pos}</td>
+            </tr>
+            <tr>
+                <td>Qualification</td>
+                <td>${values.edu}</td>
+            </tr>
+            `;
+                    document.getElementById('dialogRows').innerHTML = dialogData;
+
+
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                });
+            d.show();
+
+
+        }
+
+        function dialogClose() {
+            d.close();
+        }
+
+
+        function searchFunc() {
+            const searchValue = document.getElementById("search").value;
+
+            fetch(`http://localhost:5500/search?search=${searchValue}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateTable(data)
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                });
+        }
+
+        function updateTable(data) {
+            let tableData = "";
+            data.forEach((values, index) => {
+                tableData += `<tr>
+            <td onmousedown="showDialog(${index})" style="cursor: pointer; --hover-text-decoration: underline; text-decoration: initial; --hover-color: blue; color: initial;" onmouseover="this.style.textDecoration=getComputedStyle(this).getPropertyValue('--hover-text-decoration'); this.style.color=getComputedStyle(this).getPropertyValue('--hover-color')" onmouseout="this.style.textDecoration='initial'; this.style.color='initial'" >${values.fn ? values.fn.replace(/^./, values.fn[0].toUpperCase()) : ''}</td>
+            <td>${values.em}</td>
+            <td>${values.pos}</td>
+            <td>
+                <button onclick="editRow(${index})" style="--hover-background-color: rgb(18, 127, 222); background-color: initial;" onmouseover="this.style.backgroundColor=getComputedStyle(this).getPropertyValue('--hover-background-color')" onmouseout="this.style.backgroundColor='initial'">Edit</button>&nbsp;&nbsp;
+                <button onclick="deleteRow(${index})" style="--hover-background-color: red; background-color: initial;" onmouseover="this.style.backgroundColor=getComputedStyle(this).getPropertyValue('--hover-background-color')" onmouseout="this.style.backgroundColor='initial'">Delete</button>
+            </td>
+        </tr>`;
+            });
+
+            document.getElementById('tablebody').innerHTML = tableData;
+        }
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>
